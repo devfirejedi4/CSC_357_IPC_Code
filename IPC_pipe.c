@@ -29,16 +29,21 @@ int main()
     if (child_pid == 0) 
     {
     	// Child process
-	printf("(child) pid = %d\n", child_pid);
+	    printf("(child) pid = %d\n", getpid());
 	
         close(pipe_fd[1]);  // Close the write end of the pipe
 
         // Read from the pipe
         char buffer[100];
-        read(pipe_fd[0], buffer, sizeof(buffer));
+        if(read(pipe_fd[0], buffer, sizeof(buffer)) == -1)
+        {
+            perror("Read failed");
+            exit(EXIT_FAILURE);
+        }
         printf("Child received: %s\n", buffer);
 
-        // optional: close(pipe_fd[0]);  // Close the read end of the pipe in the child
+        // Close the read end of the pipe in the child
+        close(pipe_fd[0]);
     } 
     else 
     {
@@ -49,10 +54,18 @@ int main()
 
         // Write to the pipe
         char *message = "Hello from the parent!";
-        // sleep(3);
-	write(pipe_fd[1], message, strlen(message) + 1);
+        
+        // Sleep for 3 seconds before writing to the pipe
+        sleep(3);
 
-        // optional: close(pipe_fd[1]);  // Close the write end of the pipe in the parent
+	    if(write(pipe_fd[1], message, strlen(message) + 1) == -1)
+        {
+            perror("Write failed");
+            exit(EXIT_FAILURE);
+        }
+
+        // Close the write end of the pipe in the parent
+        close(pipe_fd[1]);
 
         // Wait for the child to finish
         wait(NULL);
@@ -60,4 +73,3 @@ int main()
 
     return 0;
 }
-
