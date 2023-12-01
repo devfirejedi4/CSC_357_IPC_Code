@@ -29,7 +29,7 @@ int main()
     if (child_pid == 0) 
     {
     	// Child process
-	    printf("(child) pid = %d\n", getpid());
+	printf("(child) pid = %d\n", getpid());
 	
         close(pipe_fd[1]);  // Close the write end of the pipe
 
@@ -58,7 +58,7 @@ int main()
         // Sleep for 3 seconds before writing to the pipe
         sleep(3);
 
-	    if(write(pipe_fd[1], message, strlen(message) + 1) == -1)
+	if(write(pipe_fd[1], message, strlen(message) + 1) == -1)
         {
             perror("Write failed");
             exit(EXIT_FAILURE);
